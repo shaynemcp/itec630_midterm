@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Interactive Systems Analysis Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-element:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+        
+        .floating-element:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        .floating-element:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 70%;
+            animation-delay: 1s;
+        }
+        
+        .floating-element:nth-child(5) {
+            width: 90px;
+            height: 90px;
+            top: 40%;
+            left: 5%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 12px;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Score display */
+        .score-display {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Achievement badges */
+        .achievement-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            animation: bounce 0.6s ease;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        /* Study mode buttons */
+        .study-mode-btn {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        .study-mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .study-mode-btn.active {
+            background: linear-gradient(45deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        /* Enhanced flip card styles */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .flip-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 1rem;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        
+        .flip-card-front {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            color: #1e293b;
+            border: 2px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .flip-card-back {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            color: white;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #a5b4fc #4f46e5;
+        }
+        
+        .flip-card-back::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .flip-card-back::-webkit-scrollbar-track {
+            background: #4f46e5;
+            border-radius: 1rem;
+        }
+        
+        .flip-card-back::-webkit-scrollbar-thumb {
+            background-color: #a5b4fc;
+            border-radius: 10px;
+            border: 2px solid #4f46e5;
+        }
+        
+        /* Enhanced accordion styles */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .accordion-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        /* Sound effect styles */
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Celebration animation */
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            z-index: 1000;
+            pointer-events: none;
+            animation: celebrate 1s ease-out;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        /* Streak counter */
+        .streak-counter {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="text-white p-4 sm:p-6 md:p-8">
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle" title="Toggle Sound Effects">
+        🔊
+    </button>
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">🎓 Systems Analysis & Design</h1>
+            <p class="mt-2 text-xl text-blue-200 font-medium">Interactive Midterm Study Guide</p>
+            
+            <!-- Progress and Score Display -->
+            <div class="mt-6 flex flex-col items-center space-y-4">
+                <div class="score-display flex items-center space-x-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400" id="score">0</div>
+                        <div class="text-sm text-blue-200">Score</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-400" id="streak">0</div>
+                        <div class="text-sm text-blue-200">Streak</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-400" id="cardsStudied">0</div>
+                        <div class="text-sm text-blue-200">Cards</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container w-full max-w-md">
+                    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                </div>
+                
+                <div id="achievements" class="flex flex-wrap justify-center"></div>
+            </div>
+            
+            <!-- Study Mode Buttons -->
+            <div class="mt-6 flex flex-wrap justify-center">
+                <button class="study-mode-btn active" data-mode="flashcards">📚 Flashcards</button>
+                <button class="study-mode-btn" data-mode="quiz">🎯 Quiz Mode</button>
+                <button class="study-mode-btn" data-mode="review">🔄 Review</button>
+            </div>
+            
+            <p class="mt-6 text-blue-200 text-lg">Click on a section to expand it, then click on a card to flip it over and reveal the definition!</p>
+        </header>
+
+        <main id="study-guide-container" class="space-y-6">
+            <!-- Content will be injected here by JavaScript -->
+        </main>
+
+        <footer class="text-center mt-12 text-blue-200">
+            <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20">
+                <p class="text-lg font-medium mb-2">🎉 Happy studying! 🎉</p>
+                <p class="text-sm opacity-80">Press SPACE to flip a random card • Press S to toggle sound</p>
+                <div class="mt-4 text-xs opacity-60">
+                    Made with ❤️ for ITEC 630 Systems Analysis & Design
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Game state management
+        let gameState = {
+            score: 0,
+            streak: 0,
+            cardsStudied: 0,
+            totalCards: 0,
+            soundEnabled: true,
+            achievements: [],
+            studyMode: 'flashcards',
+            flippedCards: new Set()
+        };
+
+        // Sound effects (using Web Audio API)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(frequency, duration, type = 'sine') {
+            if (!gameState.soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playFlipSound() {
+            playSound(800, 0.1, 'square');
+        }
+
+        function playSuccessSound() {
+            playSound(600, 0.2, 'sine');
+            setTimeout(() => playSound(800, 0.2, 'sine'), 100);
+            setTimeout(() => playSound(1000, 0.3, 'sine'), 200);
+        }
+
+        function playAchievementSound() {
+            playSound(1000, 0.1, 'square');
+            setTimeout(() => playSound(1200, 0.1, 'square'), 50);
+            setTimeout(() => playSound(1400, 0.1, 'square'), 100);
+            setTimeout(() => playSound(1600, 0.2, 'square'), 150);
+        }
+
+        // Achievement system
+        const achievements = [
+            { id: 'first_flip', name: '🎯 First Flip', description: 'Flipped your first card!', condition: () => gameState.cardsStudied >= 1 },
+            { id: 'streak_5', name: '🔥 Hot Streak', description: '5 cards in a row!', condition: () => gameState.streak >= 5 },
+            { id: 'studied_10', name: '📚 Scholar', description: 'Studied 10 cards!', condition: () => gameState.cardsStudied >= 10 },
+            { id: 'studied_25', name: '🎓 Expert', description: 'Studied 25 cards!', condition: () => gameState.cardsStudied >= 25 },
+            { id: 'studied_50', name: '🏆 Master', description: 'Studied 50 cards!', condition: () => gameState.cardsStudied >= 50 },
+            { id: 'perfect_streak', name: '⭐ Perfect', description: '10 card streak!', condition: () => gameState.streak >= 10 }
+        ];
+
+        function checkAchievements() {
+            achievements.forEach(achievement => {
+                if (!gameState.achievements.includes(achievement.id) && achievement.condition()) {
+                    gameState.achievements.push(achievement.id);
+                    showAchievement(achievement);
+                    playAchievementSound();
+                }
+            });
+        }
+
+        function showAchievement(achievement) {
+            const achievementElement = document.createElement('div');
+            achievementElement.className = 'achievement-badge';
+            achievementElement.textContent = achievement.name;
+            achievementElement.title = achievement.description;
+            
+            document.getElementById('achievements').appendChild(achievementElement);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (achievementElement.parentNode) {
+                    achievementElement.parentNode.removeChild(achievementElement);
+                }
+            }, 5000);
+        }
+
+        function showCelebration() {
+            const celebrations = ['🎉', '✨', '🌟', '🎊', '💫', '🔥'];
+            const randomCelebration = celebrations[Math.floor(Math.random() * celebrations.length)];
+            
+            const celebrationElement = document.createElement('div');
+            celebrationElement.className = 'celebration';
+            celebrationElement.textContent = randomCelebration;
+            
+            document.body.appendChild(celebrationElement);
+            
+            setTimeout(() => {
+                if (celebrationElement.parentNode) {
+                    celebrationElement.parentNode.removeChild(celebrationElement);
+                }
+            }, 1000);
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('streak').textContent = gameState.streak;
+            document.getElementById('cardsStudied').textContent = gameState.cardsStudied;
+            
+            const progressPercentage = gameState.totalCards > 0 ? (gameState.cardsStudied / gameState.totalCards) * 100 : 0;
+            document.getElementById('progressBar').style.width = `${progressPercentage}%`;
+        }
+
+        function calculateTotalCards() {
+            gameState.totalCards = studyGuideData.reduce((total, section) => total + section.terms.length, 0);
+        }
+
+        // Study mode functionality
+        function setStudyMode(mode) {
+            gameState.studyMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.study-mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            
+            // Re-render content based on mode
+            renderStudyGuide();
+        }
+
+        const studyGuideData = [
+            {
+                title: "Introduction to Systems Analysis, Modeling, & Design",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                terms: [
+                    { term: "Information Technology (IT)", definition: "The combination of hardware, software, and services that people use to manage, communicate, and share information.", concept: "IT supports business operations, improves productivity, and helps managers make decisions. It is a rapidly changing field, requiring professionals to continuously adapt and integrate new technologies.", example: "A company utilizes cloud computing services (software/services) for its customer relationship management (CRM) software, accessible via employee laptops (hardware) to manage customer data and communication." },
+                    { term: "Systems Analysis and Design (SA&D)", definition: "A step-by-step process for developing high-quality information systems. It involves analyzing, designing, implementing, and maintaining these systems.", concept: "SA&D focuses on effectively using hardware, software, data, processes, and people to support a company's business objectives.", example: "The entire multi-phase process of creating a new online university registration system, from initial planning to deployment and ongoing support." },
+                    { term: "Information System (IS)", definition: "A combination of information technology, people, and data designed to support specific business requirements.", concept: "Information is a vital corporate resource, and IS ensures its systematic management, accessibility, analysis, modification, and storage. It can handle routine tasks, aid decision-making, and reveal marketplace trends.", example: "An airline's reservation system, which manages flight bookings (data, software, hardware) and is used by agents (people) to support customer travel." },
+                    { term: "Systems Analyst", definition: "A key member of the IT department team who plans, develops, and maintains information systems, acting as a translator between business needs and technical solutions.", concept: "Analysts require strong analytical, critical thinking, business, and communication skills to transform business requirements into IT projects and explain complex technical issues to non-technical stakeholders.", example: "An analyst working with a marketing team to define the requirements for a new campaign management system, then detailing those requirements for software developers." },
+                    { term: "Stakeholder", definition: "Any person, group, or entity, inside or outside a company, who has an interest in or is affected by an information system or the company’s performance.", concept: "User involvement, as a key group of stakeholders, is recognized as a critical success factor in the development of information systems.", example: "For a new hospital patient management system, stakeholders include doctors, nurses, administrative staff, IT personnel, and even patients and insurance companies." },
+                    { term: "System", definition: "A set of related components that work together to produce specific results.", concept: "Systems possess a natural structure composed of interacting elements, which can be hierarchically broken down into subsystems, assemblies, and components. Understanding a system involves defining its elements, interactions, needs, and boundaries.", example: "A car, comprised of engine, transmission, and braking subsystems, all interacting to achieve the result of transportation." },
+                ]
+            },
+            {
+                title: "Systems Development Life Cycle (SDLC) & Methodologies",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5V4H4zm0 0l6 6m-6 0h5v5H4v-5zm0 0l6-6m6 6l-6-6m6 6v5h5v-5h-5zm0 0l-6 6m6 0h5v-5h-5v5z" /></svg>`,
+                terms: [
+                    { term: "Systems Development Life Cycle (SDLC)", definition: "A systematic framework that outlines the activities and functions typically performed by systems developers throughout an information system's lifespan.", concept: "The SDLC provides a structured, phased approach (Planning, Analysis, Design, Implementation, Support & Security) for managing the development of information systems.", example: "The entire structured process followed by a software company to create, test, and launch a new version of their operating system, from conception to retirement." },
+                    { term: "Waterfall Model", definition: "A traditional, sequential software development model where each SDLC phase's deliverable flows into the next phase.", concept: "It is a predictive approach, similar to a construction blueprint, with distinct, generally non-overlapping phases: requirements, design, construction, testing, and maintenance.", example: "A government defense project with highly stable requirements, where thorough documentation and approval are completed for each phase before moving to the next." },
+                    { term: "Methodology", definition: "A collection of procedures, techniques, and processes used to guide activities within each phase of a software life cycle.", concept: "Methodologies provide a disciplined and structured approach to software development, crucial for effectively using tools, improving productivity, and ensuring consistent application development.", example: "Structured Analysis, Object-Oriented Analysis, and Agile Methods are distinct methodologies, each with its own set of tools and techniques." },
+                    { term: "Structured Analysis", definition: "A traditional, process-centered systems development technique that organizes development into SDLC phases, treating processes and data as separate components.", concept: "It adopts a top-down approach, focusing on 'what' the application needs to do by emphasizing processes that transform input data flows into output data flows.", example: "Using Data Flow Diagrams (DFDs) to visually map how customer order data moves through 'receive order,' 'verify inventory,' and 'ship product' processes." },
+                    { term: "Object-Oriented (O-O) Analysis", definition: "A modern approach that identifies 'objects,' which encapsulate both data (attributes) and the processes (methods) that act upon that data.", concept: "Views a system as a collection of interacting objects representing real-world entities. It emphasizes encapsulation and inheritance to integrate data and processes.", example: "Designing a university system where a Student object has attributes like studentID and methods like enrollInCourse()." },
+                    { term: "Agile Methods", definition: "Systems development methods that iteratively and incrementally build systems through a series of prototypes, continuously adjusting to user requirements.", concept: "Agile methods typically use a spiral development model, fostering rapid feedback, collaboration, and flexibility to adapt to changing needs.", example: "A software team using Scrum, delivering small, functional increments of a web application every two weeks." },
+                    { term: "Prototyping", definition: "The creation of an early, rapidly constructed working model of an information system or its components.", concept: "A repetitive process of analysis, design, modeling, and testing that allows users to interact with a tangible model early in development to refine requirements.", example: "Building an interactive mock-up of a mobile app's main screens to get user feedback before writing code." },
+                ]
+            },
+            {
+                title: "Systems Planning Phase",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>`,
+                terms: [
+                     { term: "Systems Planning Phase", definition: "The initial phase of the SDLC where project proposals are evaluated for feasibility, and IT projects are planned, scheduled, monitored, and reported.", concept: "This phase’s primary goal is to ensure that proposed information systems align with and support the organization’s strategic business goals.", example: "An IT steering committee reviews several project proposals and decides which to pursue based on corporate strategy and feasibility." },
+                     { term: "Business Case", definition: "A documented justification for a proposed project or initiative, explaining the reasons for proceeding.", concept: "A comprehensive document that describes the project, its justification, and estimated financial impact.", example: "A report detailing why a software upgrade is needed, outlining problems, solutions, benefits, and financial projections." },
+                     { term: "Systems Request", definition: "A formal submission to the IT department describing a problem or desired change.", concept: "This document formally initiates the systems planning phase and can come from various stakeholders.", example: "An HR manager submits a form requesting a new feature in the payroll system to automatically generate tax reports." },
+                     { term: "Feasibility Study", definition: "An initial assessment conducted to determine the practicality and viability of a proposed project.", concept: "It reviews costs and benefits to recommend a course of action, aiming to eliminate infeasible requests early.", example: "A rapid evaluation of a new online learning platform to see if it's technically achievable and financially justifiable." },
+                     { term: "Operational Feasibility", definition: "An assessment of whether a proposed system will be effectively used by the organization.", concept: "Evaluates the system's impact on culture, workflows, and customer experience.", example: "Determining if employees will adopt a new internal communication system or if it clashes with established practices." },
+                     { term: "Technical Feasibility", definition: "An evaluation of whether the organization possesses the necessary technical resources and expertise.", concept: "Assesses if the technology is available and compatible with existing infrastructure.", example: "Researching if current servers can handle the load of a new web application." },
+                     { term: "Economic Feasibility", definition: "An analysis that determines if the projected financial benefits outweigh the estimated costs.", concept: "Involves detailed cost-benefit analysis, including Total Cost of Ownership (TCO).", example: "A spreadsheet analysis showing a $500k investment will result in $750k in savings over five years." },
+                     { term: "Schedule Feasibility", definition: "An assessment of whether a project can be completed within an acceptable timeframe.", concept: "Considers resource availability and potential constraints. Accelerating a schedule can increase cost.", example: "A project plan determines a new system can be implemented in 9 months, meeting a regulatory deadline." },
+                     { term: "Total Cost of Ownership (TCO)", definition: "A financial assessment including all acquisition, support, maintenance, and operational expenses.", concept: "Provides a holistic financial picture, moving beyond initial purchase price to include hidden costs.", example: "Evaluating HR software by factoring in license fees, subscription costs, integration, support, and upgrades." },
+                     { term: "Project Management", definition: "The process of planning, scheduling, monitoring, and reporting on system development.", concept: "Aims to deliver systems within specified timeframes, budgets, and quality standards.", example: "A project manager uses Gantt charts to track tasks, deadlines, and resources for a new mobile app." },
+                     { term: "Gantt Chart", definition: "A horizontal bar chart visually representing project activities (tasks) against time.", concept: "Effective for illustrating task durations, start/end dates, and dependencies.", example: "A chart showing 'Design UI' (3 weeks) and 'Develop Backend' (6 weeks) as bars on a timeline." },
+                     { term: "PERT/CPM Chart", definition: "Tools (Program Evaluation and Review Technique/Critical Path Method) that display tasks in a network diagram.", concept: "Identifies the 'critical path,' the sequence of tasks dictating the shortest project completion time.", example: "A chart showing that 'installing OS' cannot start until 'hardware assembly' is complete." }
+                ]
+            },
+            {
+                title: "Systems Analysis Phase",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l2.879-2.879a1 1 0 011.414 0L15 15m7-5l-3-3m0 0l-3 3m3-3v12a2 2 0 01-2 2H7a2 2 0 01-2-2V8a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-1" /></svg>`,
+                terms: [
+                    { term: "Systems Analysis Phase", definition: "The second SDLC phase where the goal is to understand the proposed project, ensure it supports business requirements, and build a solid foundation for the system design phase.", concept: "This phase involves gathering detailed facts about the existing system (if any) and identifying the requirements for the new system. It answers the question: What must the information system do to solve the problem?", example: "A team of analysts conducts interviews and workshops to map out all the processes involved in the current manual inventory tracking system before designing a new automated one." },
+                    { term: "Joint Application Development (JAD)", definition: "A user-involved design and development process where users, managers, and systems analysts participate in a series of intensive, facilitated workshops.", concept: "JAD centralizes the fact-finding and modeling process, accelerating requirements gathering and improving user engagement and buy-in by making them active partners in the design.", example: "A three-day off-site workshop where end-users from the accounting department, IT analysts, and project managers collaborate to define and model a new accounts payable system." },
+                    { term: "Rapid Application Development (RAD)", definition: "A team-based technique that speeds up information systems development by using a condensed, iterative process that relies heavily on prototyping and user involvement.", concept: "RAD is an adaptive methodology that uses workshops, prototyping, and CASE tools to compress the SDLC, producing a functional system much faster than traditional methods.", example: "Creating a new customer feedback portal by quickly building a prototype, getting user feedback, refining it in a JAD-like session, and then finalizing the system, all within a few months." },
+                    { term: "Functional Decomposition Diagram (FDD)", definition: "A top-down representation of a function or process, which is broken down into smaller, more specific, and manageable sub-functions.", concept: "FDDs help analysts visualize the logical structure of a system by showing its major processes and how they are broken down into lower-level tasks, without detailing the program logic itself.", example: "An FDD for a 'Library Management' system might break down into 'Manage Members,' 'Manage Loans,' and 'Manage Inventory,' with 'Manage Loans' further breaking down into 'Check Out Item' and 'Check In Item'." },
+                    { term: "Unified Modeling Language (UML)", definition: "A standardized modeling language used to visualize, specify, construct, and document the artifacts of a software-intensive system.", concept: "UML provides a common vocabulary of standardized diagrams and symbols that can be used by object-oriented developers to model different aspects of a system, such as its structure and behavior.", example: "Using UML to create a Use Case Diagram to show user interactions and a Class Diagram to model the system's static structure." },
+                    { term: "Use Case Diagram", definition: "A UML diagram that visually represents the interaction between users (actors) and an information system.", concept: "It provides a high-level view of the system's functionality by showing what the system does from a user's perspective, capturing all possible interactions.", example: "A use case diagram for an ATM showing the 'Customer' actor interacting with use cases like 'Withdraw Cash,' 'Deposit Funds,' and 'Check Balance'." },
+                    { term: "Sequence Diagram", definition: "A UML diagram that shows the timing and interaction of objects to accomplish a specific task or use case.", concept: "It illustrates how different objects in a system collaborate and in what sequence messages are passed between them over time, making it useful for understanding dynamic behavior.", example: "A sequence diagram detailing the login process, showing message exchanges between the user interface object, the authentication controller object, and the database object." },
+                    { term: "System Requirement", definition: "A characteristic or condition that a system must possess or a function it must perform to satisfy a business need, contract, or standard.", concept: "Requirements are categorized into functional (what the system must do) and non-functional (how the system must perform), and they form the basis for the entire system design.", example: "A functional requirement: 'The system must allow users to search for products by name.' A non-functional requirement: 'The product search must return results in under two seconds'." },
+                    { term: "Scalability", definition: "The ability of a system to handle a growing amount of work or its potential to be enlarged to accommodate that growth.", concept: "Scalability is a crucial non-functional requirement that ensures a system can continue to perform well as the number of users, transactions, or data volume increases.", example: "Designing a website's architecture to handle 1,000 concurrent users today, but with the capacity to support 100,000 concurrent users in the future by adding more servers." }
+                ]
+            },
+            {
+                title: "Data and Process Modeling",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V7a2 2 0 012-2h4l4-4v4z" /></svg>`,
+                terms: [
+                    { term: "Data Flow Diagram (DFD)", definition: "A graphical representation of the 'flow' of data through an information system, modeling its process aspects.", concept: "DFDs show how data moves from external entities, through processes, and into data stores, without showing logic or timing. They are a key tool in structured analysis.", example: "A diagram showing a customer's 'Payment' (data flow) entering a 'Process Payment' (process) which then updates the 'Accounts Receivable' (data store)." },
+                    { term: "Process (DFD)", definition: "A business activity or function that transforms input data flows into output data flows.", concept: "Represented by a rounded rectangle in a DFD, a process must have at least one input and one output data flow.", example: "In an order system, a process named 'Apply Customer Discount' takes an 'Order Total' as input and produces a 'Discounted Total' as output." },
+                    { term: "Data Flow (DFD)", definition: "A path for data to move from one part of the information system to another.", concept: "Represented by a line with an arrowhead, a data flow is a pipeline through which packets of information of known composition flow.", example: "A 'Customer Order' data flow carries customer and item information from the 'Customer' entity to the 'Create Order' process." },
+                    { term: "Data Store (DFD)", definition: "A repository of data that is stored for later use.", concept: "Represented by two parallel lines, a data store is a 'data at rest.' A process can add, update, or retrieve data from it.", example: "A 'Products' data store holds information about all available products, such as price and quantity on hand." },
+                    { term: "External Entity (DFD)", definition: "A person, organization, or system that is outside the boundary of the system but interacts with it by providing or receiving data.", concept: "Represented by a rectangle, entities are the sources and destinations of the system's data. Also known as terminators.", example: "A 'Customer' who submits an order or a 'Bank' that receives payment information." },
+                    { term: "Context Diagram", definition: "A top-level DFD (Diagram 0) that shows the entire information system as a single process with its inputs and outputs from external entities.", concept: "It sets the boundary and scope of the system by showing how it interacts with the outside world, without revealing its internal complexity.", example: "A DFD showing an 'Order System' process interacting with 'Customer,' 'Warehouse,' and 'Accounting' entities." },
+                    { term: "Data Dictionary", definition: "A centralized repository of information about data, such as meaning, relationships to other data, origin, usage, and format.", concept: "It defines and documents every data element and data flow in a DFD, ensuring consistency and understanding. Also called a repository.", example: "An entry for 'StudentID' defining it as a 9-digit integer that must be unique and is used as the primary key in the 'Students' data store." },
+                    { term: "Process Description", definition: "A detailed documentation of the logic and rules for a functional primitive (the lowest-level process in a DFD).", concept: "Tools like structured English, decision tables, and decision trees are used to explain what happens inside a process bubble.", example: "Using structured English to write the step-by-step logic for the 'Calculate Sales Tax' process." },
+                    { term: "Decision Tree", definition: "A graphical representation of conditions, actions, and rules, resembling an upside-down tree.", concept: "It is a useful way to model business logic for complex decisions by showing all possible outcomes in a sequential, branching structure.", example: "A tree diagram showing how to determine a shipping charge based on destination (local/international) and weight (under/over 5kg)." },
+                    { term: "Decision Table", definition: "A table that shows a set of conditions and their corresponding actions.", concept: "It is a compact way to represent complex business logic, especially when there are many combinations of conditions.", example: "A table with columns for 'Customer Type' and 'Order Size' and rows indicating the 'Discount Percentage' to apply." },
+                    { term: "Structured English", definition: "A subset of the English language with a limited vocabulary and syntax, used to describe process logic in a clear and unambiguous way.", concept: "It uses keywords from programming (like IF, THEN, ELSE) but is less formal than pseudocode, making it easy for non-programmers to understand.", example: "For each ORDER: IF Order_Total is greater than $100, THEN apply 10% discount, ELSE apply 5% discount." }
+                ]
+            },
+            {
+                title: "Object Modeling",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg>`,
+                terms: [
+                    { term: "Object Model", definition: "A model that represents a system in terms of objects and their interactions.", concept: "The object model is the end product of object-oriented analysis, providing a complete visualization of the system before it is built.", example: "The complete set of UML diagrams (Class, Sequence, etc.) that describe an e-commerce system." },
+                    { term: "Object", definition: "A real-world entity that has a well-defined state and behavior. It is an instance of a class.", concept: "In object-oriented analysis, objects are the basic building blocks, encapsulating both data (attributes) and processes (methods).", example: "A specific student named 'John Doe' is an object of the 'Student' class." },
+                    { term: "Attribute", definition: "A characteristic or property of an object.", concept: "Attributes define the state of an object; they are the data that the object stores.", example: "A 'Student' object might have attributes like 'studentID', 'name', and 'major'." },
+                    { term: "Method", definition: "A specific task or function that an object can perform.", concept: "Methods define the behavior of an object; they are the actions that the object can take, often manipulating its own attributes.", example: "A 'Student' object might have methods like 'registerForCourse()' or 'calculateGPA()'." },
+                    { term: "Message", definition: "A command that tells an object to perform one of its methods.", concept: "Objects communicate with each other by sending and receiving messages, which triggers behavior.", example: "A 'RegistrationSystem' object sends a 'registerForCourse()' message to a specific 'Student' object." },
+                    { term: "Class", definition: "A blueprint or template for creating objects.", concept: "A class defines a set of common attributes and methods that all objects of that class will have.", example: "The 'Student' class defines that all student objects will have a name and the ability to register for courses." },
+                    { term: "Inheritance", definition: "A mechanism that enables a new class (subclass) to inherit attributes and methods from an existing class (superclass).", concept: "Inheritance promotes code reusability and creates a natural hierarchy. A subclass is a more specific version of its superclass.", example: "A 'GraduateStudent' class can inherit properties from the 'Student' class and add its own specific attributes like 'thesisTopic'." }
+                ]
+            },
+            {
+                title: "Development Strategies",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>`,
+                terms: [
+                    { term: "Outsourcing", definition: "The practice of hiring an external company to perform services or create goods that were traditionally performed in-house.", concept: "Companies outsource to reduce costs, access specialized skills, and focus on their core business activities. It can range from hiring a firm to manage IT services to contracting out software development.", example: "A retail company hires a third-party logistics firm to manage all of its warehousing and shipping operations." },
+                    { term: "Offshore Outsourcing (Offshoring)", definition: "A type of outsourcing where the work is delegated to a company in a different country, often to take advantage of lower labor costs.", concept: "Offshoring can provide significant cost savings but also introduces challenges related to time zones, culture, and communication.", example: "A U.S.-based tech company hires a software development team in India to build its new mobile application." },
+                    { term: "In-House Software Development", definition: "The process of developing a software system using the company's own IT staff and resources.", concept: "Developing software in-house provides maximum control over the project and ensures the final product is tailored to the company's specific needs, but it can be more expensive and time-consuming.", example: "A bank's internal IT department develops a proprietary trading application for its financial analysts." },
+                    { term: "Software as a Service (SaaS)", definition: "A software licensing and delivery model in which software is licensed on a subscription basis and is centrally hosted by a third-party provider.", concept: "SaaS reduces the need for companies to install and run applications on their own computers or in their own data centers, lowering upfront costs and maintenance overhead.", example: "Instead of buying and installing Microsoft Office, a company subscribes to Office 365, accessing the applications over the internet." },
+                    { term: "Request for Proposal (RFP)", definition: "A document that solicits proposals from potential suppliers of a product or service.", concept: "An RFP is used when the requirements are complex. It describes the problem to be solved and asks vendors to propose a specific solution, including technical details and costs.", example: "A hospital issues an RFP for a new electronic health record system, outlining its needs and asking vendors to submit detailed proposals." },
+                    { term: "Request for Quotation (RFQ)", definition: "A document used to solicit price quotes from prospective suppliers for a well-defined product or service.", concept: "An RFQ is used when the requirements are straightforward and the primary decision factor is price. The specifications are known, and vendors are simply asked to provide a price.", example: "A company sends an RFQ to several hardware vendors to get prices for 100 new laptops with specific model numbers." }
+                ]
+            },
+            {
+                title: "User Interface Design",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
+                terms: [
+                    { term: "User Interface (UI)", definition: "The point of human-computer interaction and communication in a device. This can include display screens, keyboards, a mouse, and the appearance of a desktop.", concept: "A good UI should be user-friendly, efficient, and intuitive, enabling users to accomplish their tasks with minimal effort. It includes everything the user sees, touches, and interacts with.", example: "The graphical layout of a mobile banking app, including the buttons, text fields, images, and sliders." },
+                    { term: "Human-Computer Interaction (HCI)", definition: "A multidisciplinary field of study focusing on the design of computer technology and, in particular, the interaction between humans (the users) and computers.", concept: "HCI studies how people interact with computers and designs technologies that let humans interact with computers in novel ways, aiming to improve usability and the user experience.", example: "Researching how touch screen gestures (like swiping and pinching) can make a photo editing application feel more natural and easier to use." },
+                    { term: "Source Document", definition: "The original record containing the details to substantiate a transaction that will be input into an accounting system or other information system.", concept: "Source documents provide evidence that a business transaction has occurred and are the starting point for data entry. They should be designed for easy and accurate completion.", example: "A printed purchase order form that a clerk fills out by hand, which is then used to enter the order into a computer system." },
+                    { term: "Garbage In, Garbage Out (GIGO)", definition: "A concept in computer science that means the quality of the output is determined by the quality of the input.", concept: "If flawed or nonsensical data is entered into a system, the resulting output will also be incorrect or nonsensical. This highlights the importance of input validation.", example: "If a user enters their birth year as '1890' into a form, and the system produces an age of '135', this is a GIGO scenario that could be prevented with input validation." },
+                    { term: "Data Capture", definition: "The process of collecting data and converting it into a form that can be read and used by a computer.", concept: "Effective data capture methods aim to get data into the system at its source, accurately and efficiently, to minimize manual data entry.", example: "Using a barcode scanner at a checkout counter to automatically capture product information instead of a cashier typing it in manually." },
+                    { term: "Data Entry", definition: "The process of inputting data into a computer system, often by typing it in from source documents.", concept: "Data entry should be designed to be as simple, efficient, and error-free as possible through well-designed forms and validation rules.", example: "An operator keying in customer addresses from handwritten registration cards into a database." },
+                    { term: "Detail Report", definition: "A report that produces one or more lines of output for each record processed.", concept: "Detail reports are used when users need to see the specifics of individual transactions or records. They can be lengthy.", example: "A report listing every single sale made on a particular day, with details for each transaction like customer name, items purchased, and total price." },
+                    { term: "Summary Report", definition: "A report that provides totals and trends rather than detailed data for individual records.", concept: "Summary reports are useful for managers who want a high-level overview of data to identify trends and make decisions, without getting bogged down in details.", example: "A monthly sales report that shows total sales for each product category, rather than listing every individual sale." }
+                ]
+            },
+            {
+                title: "Data Design",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>`,
+                terms: [
+                    { term: "Database Management System (DBMS)", definition: "A software package designed to define, manipulate, retrieve, and manage data in a database.", concept: "A DBMS provides an interface between the database and the end-users or application programs, ensuring that data is consistently organized and remains easily accessible.", example: "Popular DBMS examples include MySQL, Microsoft SQL Server, Oracle Database, and PostgreSQL." },
+                    { term: "Relational Database", definition: "A type of database that stores and provides access to data points that are related to one another.", concept: "The relational model organizes data into tables (or 'relations') of columns and rows, with a unique key for each row. This structure allows for efficient and flexible data retrieval.", example: "A database with a 'Customers' table and an 'Orders' table, where each order is linked back to a customer via a 'CustomerID' key." },
+                    { term: "Primary Key", definition: "A field (or combination of fields) in a table that uniquely identifies each record in that table.", concept: "A primary key must contain unique values and cannot contain NULL values. It is essential for identifying and retrieving specific records.", example: "In a 'Students' table, the 'StudentID' field would be the primary key, as each student has a unique ID." },
+                    { term: "Foreign Key", definition: "A key used to link two tables together. It is a field (or collection of fields) in one table that refers to the Primary Key in another table.", concept: "Foreign keys are the foundation of relational databases, as they create the relationships between tables and enforce referential integrity.", example: "In an 'Orders' table, 'CustomerID' would be a foreign key that points to the 'CustomerID' primary key in the 'Customers' table." },
+                    { term: "Referential Integrity", definition: "A property of data stating that all its references are valid. In the context of relational databases, it requires that if a value of one attribute (a foreign key) in a relation refers to a value of another attribute (the primary key) in another relation, then the referred value must exist.", concept: "This rule ensures that relationships between records in related tables are always consistent. You can't have an order for a non-existent customer.", example: "A DBMS will prevent a user from deleting a customer record if there are existing orders for that customer, thus maintaining referential integrity." },
+                    { term: "Normalization", definition: "The process of organizing the columns (attributes) and tables (relations) of a relational database to minimize data redundancy.", concept: "Normalization involves dividing larger tables into smaller, well-structured tables and defining relationships between them. The goal is to reduce redundant data and improve data integrity.", example: "Splitting a single table containing customer and order information into two separate 'Customers' and 'Orders' tables to avoid storing customer details repeatedly for each order." },
+                    { term: "Entity-Relationship Diagram (ERD)", definition: "A type of flowchart that illustrates how 'entities' such as people, objects, or concepts relate to each other within a system.", concept: "ERDs are a fundamental tool in database design. They visually represent the database structure, showing tables (entities), their fields (attributes), and the relationships between them.", example: "A diagram showing a 'Professor' entity and a 'Course' entity linked by a 'teaches' relationship, illustrating that one professor can teach many courses." },
+                    { term: "Cardinality", definition: "In the context of databases, cardinality refers to the uniqueness of data values contained in a column. In ERDs, it describes the numerical relationship between two entities.", concept: "Cardinality defines the rules of the relationship, such as one-to-one, one-to-many, or many-to-many.", example: "The relationship between 'Customer' and 'Order' is one-to-many, because one customer can have many orders, but each order belongs to only one customer." }
+                ]
+            },
+            {
+                title: "Managing Systems Implementation",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>`,
+                terms: [
+                    { term: "Unit Testing", definition: "The process of testing individual components or modules of a software application in isolation.", concept: "The purpose is to validate that each unit of the software code performs as expected before integrating it with other parts of the system.", example: "A developer writes a test to verify that a 'calculateTax()' function returns the correct tax amount for a given price." },
+                    { term: "Integration Testing", definition: "The phase in software testing in which individual software modules are combined and tested as a group.", concept: "This testing occurs after unit testing and before system testing. It aims to expose faults in the interaction between integrated units.", example: "Testing the process of adding a product to the shopping cart to ensure the cart module correctly communicates with the product inventory module." },
+                    { term: "System Testing", definition: "The process of testing a complete and fully integrated software product.", concept: "System testing evaluates the system's compliance with all its specified requirements. It is a form of black-box testing, where the focus is on the system's external behavior.", example: "Conducting a full end-to-end test of an e-commerce website, from a user logging in, to searching for a product, adding it to the cart, and completing the checkout process." },
+                    { term: "Direct Cutover", definition: "A system changeover strategy where the old system is stopped and the new system is started on a specific date.", concept: "This is the riskiest approach as there is no fallback if the new system fails, but it is also the least expensive and simplest to implement.", example: "On a Monday morning, a company shuts down its old email server and activates a new cloud-based email system for all employees." },
+                    { term: "Parallel Operation", definition: "A system changeover strategy where both the old and new information systems operate fully for a specified period.", concept: "This is the safest approach because the old system is still available if the new one fails. However, it is the most expensive and resource-intensive method.", example: "A company runs its new accounting system and its old one simultaneously for one month, comparing the results of both to ensure the new system is accurate." },
+                    { term: "Pilot Operation", definition: "A system changeover strategy where the new system is implemented in a single department or location before being rolled out to the rest of the organization.", concept: "This approach allows the project team to test the system in a live, but limited, environment, reducing the risk of a full-scale failure.", example: "A retail chain introduces a new point-of-sale system in one of its stores. If it's successful, it will be deployed to all other stores." },
+                    { term: "Phased Operation", definition: "A system changeover strategy where the new system is implemented in stages, or modules, one at a time.", concept: "This approach allows an organization to gradually adopt the new system, which can be less disruptive than a direct cutover, but it can take longer to fully implement.", example: "A university first rolls out the student registration module of a new system, followed by the grading module, and finally the financial aid module." }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('study-guide-container');
+
+        // Function to generate the HTML for the study guide
+        function renderStudyGuide() {
+            let html = '';
+            studyGuideData.forEach((section, sectionIndex) => {
+                html += `
+                    <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden border border-white border-opacity-20">
+                        <button class="accordion-header w-full flex items-center justify-between p-6 text-left text-xl font-semibold text-white hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all duration-300">
+                            <div class="flex items-center">
+                                ${section.icon}
+                                <span class="ml-3">${section.title}</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 border-t border-white border-opacity-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                section.terms.forEach((term, termIndex) => {
+                    const cardId = `card-${sectionIndex}-${termIndex}`;
+                    const isFlipped = gameState.flippedCards.has(cardId);
+                    
+                    html += `
+                        <div class="flip-card h-64 md:h-72 cursor-pointer ${isFlipped ? 'flipped' : ''}" 
+                             data-card-id="${cardId}" 
+                             onclick="handleCardFlip('${cardId}', '${term.term}')">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front flex flex-col justify-center items-center p-4">
+                                    <div class="text-center">
+                                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">${term.term}</h3>
+                                        <div class="text-sm text-gray-500">Click to reveal</div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back flex flex-col items-start text-left p-4">
+                                    <div class="w-full">
+                                        <h4 class="text-lg font-bold mb-3 text-white border-b border-white border-opacity-30 pb-2">${term.term}</h4>
+                                        <div class="space-y-3">
+                                            <div>
+                                                <strong class="font-semibold text-blue-200 text-sm">📖 Definition:</strong>
+                                                <p class="text-xs md:text-sm text-white mt-1">${term.definition}</p>
+                                            </div>
+                                            <div>
+                                                <strong class="font-semibold text-green-200 text-sm">💡 Key Concept:</strong>
+                                                <p class="text-xs md:text-sm text-white mt-1">${term.concept}</p>
+                                            </div>
+                                            <div>
+                                                <strong class="font-semibold text-yellow-200 text-sm">🎯 Example:</strong>
+                                                <p class="text-xs md:text-sm text-white mt-1">${term.example}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Enhanced card flip handler
+        function handleCardFlip(cardId, termName) {
+            const card = document.querySelector(`[data-card-id="${cardId}"]`);
+            const isCurrentlyFlipped = gameState.flippedCards.has(cardId);
+            
+            if (!isCurrentlyFlipped) {
+                // First time flipping this card
+                gameState.cardsStudied++;
+                gameState.streak++;
+                gameState.score += 10;
+                gameState.flippedCards.add(cardId);
+                
+                playFlipSound();
+                playSuccessSound();
+                showCelebration();
+                
+                // Check for achievements
+                checkAchievements();
+            } else {
+                // Already studied this card
+                gameState.score += 1; // Small bonus for reviewing
+                playFlipSound();
+            }
+            
+            card.classList.toggle('flipped');
+            updateUI();
+        }
+
+        // Event listeners
+        document.addEventListener('click', function(event) {
+            const header = event.target.closest('.accordion-header');
+            if (header) {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('svg:last-child');
+                
+                // Toggle active class for animation
+                icon.classList.toggle('rotate-180');
+                
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    // Close other accordions
+                    document.querySelectorAll('.accordion-content').forEach(item => {
+                        if (item !== content) {
+                            item.style.maxHeight = null;
+                            item.previousElementSibling.querySelector('svg:last-child').classList.remove('rotate-180');
+                        }
+                    });
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            }
+            
+            // Study mode button handling
+            const studyModeBtn = event.target.closest('.study-mode-btn');
+            if (studyModeBtn) {
+                const mode = studyModeBtn.dataset.mode;
+                setStudyMode(mode);
+            }
+            
+            // Sound toggle handling
+            if (event.target.id === 'soundToggle') {
+                gameState.soundEnabled = !gameState.soundEnabled;
+                event.target.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+                event.target.style.opacity = gameState.soundEnabled ? '1' : '0.5';
+                
+                if (gameState.soundEnabled) {
+                    playSound(440, 0.2); // A note
+                }
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') {
+                event.preventDefault();
+                // Space bar to flip random card
+                const unflippedCards = document.querySelectorAll('.flip-card:not(.flipped)');
+                if (unflippedCards.length > 0) {
+                    const randomCard = unflippedCards[Math.floor(Math.random() * unflippedCards.length)];
+                    randomCard.click();
+                }
+            } else if (event.key === 's') {
+                // 'S' key to toggle sound
+                document.getElementById('soundToggle').click();
+            }
+        });
+
+        // Initialize the app
+        function initializeApp() {
+            calculateTotalCards();
+            updateUI();
+            renderStudyGuide();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showCelebration();
+                const welcomeElement = document.createElement('div');
+                welcomeElement.className = 'celebration';
+                welcomeElement.textContent = '🎓 Welcome!';
+                document.body.appendChild(welcomeElement);
+                
+                setTimeout(() => {
+                    if (welcomeElement.parentNode) {
+                        welcomeElement.parentNode.removeChild(welcomeElement);
+                    }
+                }, 2000);
+            }, 500);
+        }
+
+        // Start the app
+        initializeApp();
+
+    </script>
+</body>
+</html>
+
