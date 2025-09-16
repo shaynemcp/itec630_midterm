@@ -2,24 +2,6 @@
 
 An engaging, gamified study guide for Systems Analysis & Design with interactive flashcards, progress tracking, and achievement system.
 
-## 🚀 Quick Deploy Options
-
-### GitHub Pages (Recommended)
-1. Create a new repository on GitHub
-2. Upload `index.html` to the repository
-3. Go to Settings → Pages → Deploy from main branch
-4. Your site will be live at `https://yourusername.github.io/repository-name`
-
-### Netlify (Easiest)
-1. Go to [netlify.com](https://netlify.com)
-2. Drag and drop `index.html` onto the deploy area
-3. Get instant URL!
-
-### Vercel
-1. Go to [vercel.com](https://vercel.com)
-2. Import repository or drag & drop file
-3. Automatic deployment with custom domain options
-
 ## 🎮 Features
 
 - **Interactive Flashcards** - Click to flip and reveal definitions
