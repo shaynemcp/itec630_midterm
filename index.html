@@ -365,6 +365,14 @@
                 <button class="study-mode-btn" data-mode="review">🔄 Review</button>
             </div>
             
+            <!-- Section Overview -->
+            <div class="mt-8 bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20">
+                <h3 class="text-lg font-semibold text-white mb-4 text-center">📚 Study Sections Overview</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="sectionOverview">
+                    <!-- Section overview items will be populated by JavaScript -->
+                </div>
+            </div>
+            
             <p class="mt-6 text-blue-200 text-lg">Click on a section to expand it, then click on a card to flip it over and reveal the definition!</p>
         </header>
 
@@ -495,6 +503,57 @@
             
             const progressPercentage = gameState.totalCards > 0 ? (gameState.cardsStudied / gameState.totalCards) * 100 : 0;
             document.getElementById('progressBar').style.width = `${progressPercentage}%`;
+            
+            // Update section overview
+            updateSectionOverview();
+        }
+
+        function updateSectionOverview() {
+            const overviewContainer = document.getElementById('sectionOverview');
+            let overviewHtml = '';
+            
+            studyGuideData.forEach((section, sectionIndex) => {
+                const sectionCards = section.terms.length;
+                const sectionFlippedCards = section.terms.filter((_, termIndex) => 
+                    gameState.flippedCards.has(`card-${sectionIndex}-${termIndex}`)
+                ).length;
+                const sectionProgress = sectionCards > 0 ? (sectionFlippedCards / sectionCards) * 100 : 0;
+                const isComplete = sectionProgress === 100;
+                
+                overviewHtml += `
+                    <div class="bg-white bg-opacity-10 rounded-lg p-3 border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300 cursor-pointer" 
+                         onclick="scrollToSection(${sectionIndex})">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                                    ${sectionIndex + 1}
+                                </div>
+                                <span class="text-sm font-medium text-white">Section ${sectionIndex + 1}</span>
+                            </div>
+                            ${isComplete ? '<span class="text-green-400">✅</span>' : ''}
+                        </div>
+                        <div class="text-xs text-blue-200 mb-2 truncate" title="${section.title}">
+                            ${section.title}
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-blue-200">${sectionFlippedCards}/${sectionCards}</span>
+                            <div class="w-16 bg-white bg-opacity-20 rounded-full h-1">
+                                <div class="bg-gradient-to-r from-green-400 to-blue-500 h-1 rounded-full transition-all duration-500" 
+                                     style="width: ${sectionProgress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            overviewContainer.innerHTML = overviewHtml;
+        }
+
+        function scrollToSection(sectionIndex) {
+            const sectionElement = document.querySelector(`[data-section-index="${sectionIndex}"]`);
+            if (sectionElement) {
+                sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         function calculateTotalCards() {
@@ -665,16 +724,42 @@
         function renderStudyGuide() {
             let html = '';
             studyGuideData.forEach((section, sectionIndex) => {
+                // Calculate section progress
+                const sectionCards = section.terms.length;
+                const sectionFlippedCards = section.terms.filter((_, termIndex) => 
+                    gameState.flippedCards.has(`card-${sectionIndex}-${termIndex}`)
+                ).length;
+                const sectionProgress = sectionCards > 0 ? (sectionFlippedCards / sectionCards) * 100 : 0;
+                
                 html += `
-                    <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden border border-white border-opacity-20">
+                    <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden border border-white border-opacity-20" data-section-index="${sectionIndex}">
                         <button class="accordion-header w-full flex items-center justify-between p-6 text-left text-xl font-semibold text-white hover:bg-white hover:bg-opacity-10 focus:outline-none transition-all duration-300">
                             <div class="flex items-center">
-                                ${section.icon}
-                                <span class="ml-3">${section.title}</span>
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                                        ${sectionIndex + 1}
+                                    </div>
+                                    ${section.icon}
+                                    <div>
+                                        <span class="ml-2">${section.title}</span>
+                                        <div class="text-sm text-blue-200 font-normal mt-1">
+                                            ${sectionFlippedCards}/${sectionCards} cards studied
+                                            <span class="ml-2 text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                                                ${Math.round(sectionProgress)}% complete
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-16 bg-white bg-opacity-20 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-500" 
+                                         style="width: ${sectionProgress}%"></div>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </button>
                         <div class="accordion-content">
                             <div class="p-6 border-t border-white border-opacity-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
